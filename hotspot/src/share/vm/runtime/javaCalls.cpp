@@ -396,7 +396,7 @@ void JavaCalls::call_helper(JavaValue* result, methodHandle* m, JavaCallArgument
     os::bang_stack_shadow_pages();
   }
 
-  // do call
+  // do call 真正调用
   { JavaCallWrapper link(method, receiver, result, CHECK);
     { HandleMark hm(thread);  // HandleMark used by HandleMarkCleaner
 

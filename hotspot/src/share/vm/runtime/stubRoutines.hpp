@@ -232,7 +232,7 @@ class StubRoutines: AllStatic {
 
   static address catch_exception_entry()                   { return _catch_exception_entry; }
 
-  // Calls to Java
+  // Calls to Java  定义了一个函数指针
   typedef void (*CallStub)(
     address   link,
     intptr_t* result,
@@ -244,6 +244,7 @@ class StubRoutines: AllStatic {
     TRAPS
   );
 
+	/** 以 _call_stub_entry 为参数调用 CallStub  */
   static CallStub call_stub()                              { return CAST_TO_FN_PTR(CallStub, _call_stub_entry); }
 
   // Exceptions

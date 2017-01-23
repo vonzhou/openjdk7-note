@@ -1060,9 +1060,12 @@ static methodHandle jni_resolve_virtual_call(Handle recv, methodHandle method, T
 }
 
 
-
+/**
+ * jvm 调用 java 静态方法的地方
+ * TODO 修改源码
+ */
 static void jni_invoke_static(JNIEnv *env, JavaValue* result, jobject receiver, JNICallType call_type, jmethodID method_id, JNI_ArgumentPusher *args, TRAPS) {
-  methodHandle method(THREAD, JNIHandles::resolve_jmethod_id(method_id));
+  methodHandle method(THREAD, JNIHandles::resolve_jmethod_id(method_id));/** 解析 methodId 得到 methodOopDesc 实例 */
 
   // Create object to hold arguments for the JavaCall, and associate it with
   // the jni parser

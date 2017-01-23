@@ -363,6 +363,7 @@ main(int argc, char ** argv)
       args.classname = classname;
       args.ifn = ifn;
 
+	/** 在子线程中执行 JavaMain 方法 */
       return ContinueInNewThread(JavaMain, threadStackSize, (void*)&args);
     }
 }
