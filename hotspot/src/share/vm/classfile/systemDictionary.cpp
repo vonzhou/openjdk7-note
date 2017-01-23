@@ -568,8 +568,7 @@ klassOop SystemDictionary::resolve_instance_class_or_null(Symbol* name, Handle c
   // Fix for 4474172; see evaluation for more details
   class_loader = Handle(THREAD, java_lang_ClassLoader::non_reflection_class_loader(class_loader()));
 
-  // Do lookup to see if class already exist and the protection domain
-  // has the right access
+  // Do lookup to see if class already exist and the protection domain has the right access
   unsigned int d_hash = dictionary()->compute_hash(name, class_loader);
   int d_index = dictionary()->hash_to_index(d_hash);
   klassOop probe = dictionary()->find(d_index, d_hash, name, class_loader,
@@ -1415,7 +1414,8 @@ instanceKlassHandle SystemDictionary::load_instance_class(Symbol* class_name, Ha
     oop obj = (oop) result.get_jobject();
 
     // Primitive classes return null since forName() can not be
-    // used to obtain any of the Class objects representing primitives or void
+    // used to obtain any of the Class objects representing primitives or void  
+    // forName() 不能用于基本类型和void
     if ((obj != NULL) && !(java_lang_Class::is_primitive(obj))) {
       instanceKlassHandle k =
                 instanceKlassHandle(THREAD, java_lang_Class::as_klassOop(obj));
