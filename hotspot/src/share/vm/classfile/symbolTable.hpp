@@ -205,6 +205,12 @@ public:
   }
 };
 
+
+
+/**
+* String 常量池
+* jdk6中是放在 Perm 区，而jdk7把 String常量池放到了 Java Heap 区
+*/
 class StringTable : public Hashtable<oop> {
   friend class VMStructs;
 

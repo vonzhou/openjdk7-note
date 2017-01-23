@@ -1816,6 +1816,7 @@ jlong_format_specifier() {
 }
 
 /*
+ * 在子线程中执行我们制定的方法，父线程等待
  * Block current thread and continue execution in a new thread
  */
 int

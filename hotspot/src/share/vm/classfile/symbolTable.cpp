@@ -558,7 +558,7 @@ oop StringTable::intern(Symbol* symbol, TRAPS) {
   if (symbol == NULL) return NULL;
   ResourceMark rm(THREAD);
   int length;
-  jchar* chars = symbol->as_unicode(length);
+  jchar* chars = symbol->as_unicode(length);  // length 是 引用类型
   Handle string;
   oop result = intern(string, chars, length, CHECK_NULL);
   return result;
