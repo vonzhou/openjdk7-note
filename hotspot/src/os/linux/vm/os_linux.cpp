@@ -868,7 +868,7 @@ bool os::create_thread(Thread* thread, ThreadType thr_type, size_t stack_size) {
 
   // Allocate the OSThread object
   OSThread* osthread = new OSThread(NULL, NULL);
-  if (osthread == NULL) {
+  if (osthread == NULL) {    // OSThread 是底层线程的抽象，如果该对象创建失败，fail fast
     return false;
   }
 
@@ -878,12 +878,12 @@ bool os::create_thread(Thread* thread, ThreadType thr_type, size_t stack_size) {
   // Initial state is ALLOCATED but not INITIALIZED
   osthread->set_state(ALLOCATED);
 
-  thread->set_osthread(osthread);
+  thread->set_osthread(osthread);   // 在 JavaThread 中引用该 OSThread
 
   // init thread attributes
   pthread_attr_t attr;
   pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); // 创建一个 detached thread, 不会pthread_join()该线程
 
   // stack size
   if (os::Linux::supports_variable_stack_size()) {
@@ -919,7 +919,7 @@ bool os::create_thread(Thread* thread, ThreadType thr_type, size_t stack_size) {
     // let pthread_create() pick the default value.
   }
 
-  // glibc guard page
+  // glibc guard page   在分配的stack后面分配一定得 guard 区域
   pthread_attr_setguardsize(&attr, os::Linux::default_guard_size(thr_type));
 
   ThreadState state;
@@ -932,11 +932,11 @@ bool os::create_thread(Thread* thread, ThreadType thr_type, size_t stack_size) {
     }
 
     pthread_t tid;
-    int ret = pthread_create(&tid, &attr, (void* (*)(void*)) java_start, thread);
+    int ret = pthread_create(&tid, &attr, (void* (*)(void*)) java_start, thread); // 实际创建线程
 
     pthread_attr_destroy(&attr);
 
-    if (ret != 0) {
+    if (ret != 0) { // 成功的返回值是0
       if (PrintMiscellaneous && (Verbose || WizardMode)) {
         perror("pthread_create()");
       }

@@ -45,7 +45,7 @@ class OSThread: public CHeapObj {
   OSThreadStartFunc _start_proc;  // Thread start routine
   void* _start_parm;              // Thread start routine parameter
   volatile ThreadState _state;    // Thread state *hint*
-  volatile jint _interrupted;     // Thread.isInterrupted state
+  volatile jint _interrupted;     // Thread.isInterrupted state   在这里保存了中断状态
 
   // Note:  _interrupted must be jint, so that Java intrinsics can access it.
   // The value stored there must be either 0 or 1.  It must be possible
