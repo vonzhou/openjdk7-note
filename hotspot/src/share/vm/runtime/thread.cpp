@@ -132,6 +132,7 @@ HS_DTRACE_PROBE_DECL5(hotspot, thread__stop, char*, intptr_t,
 
 #endif // ndef DTRACE_ENABLED
 
+// 线程类的层次结构
 // Class hierarchy
 // - Thread
 //   - VMThread
