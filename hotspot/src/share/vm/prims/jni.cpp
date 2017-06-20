@@ -3302,6 +3302,9 @@ _JNI_IMPORT_OR_EXPORT_ jint JNICALL JNI_GetDefaultJavaVMInitArgs(void *args_) {
 HS_DTRACE_PROBE_DECL3(hotspot_jni, CreateJavaVM__entry, vm, penv, args);
 DT_RETURN_MARK_DECL(CreateJavaVM, jint);
 
+/**
+ * http://openjdk.java.net/groups/hotspot/docs/RuntimeOverview.html
+ */
 _JNI_IMPORT_OR_EXPORT_ jint JNICALL JNI_CreateJavaVM(JavaVM **vm, void **penv, void *args) {
   HS_DTRACE_PROBE3(hotspot_jni, CreateJavaVM__entry, vm, penv, args);
 
@@ -3356,6 +3359,7 @@ _JNI_IMPORT_OR_EXPORT_ jint JNICALL JNI_CreateJavaVM(JavaVM **vm, void **penv, v
    */
   bool can_try_again = true;
 
+	// ’‚¿Ô
   result = Threads::create_vm((JavaVMInitArgs*) args, &can_try_again);
   if (result == JNI_OK) {
     JavaThread *thread = JavaThread::current();
@@ -3415,6 +3419,9 @@ extern "C" {
 
 DT_RETURN_MARK_DECL(DestroyJavaVM, jint);
 
+/**
+ * ø¥
+ */
 jint JNICALL jni_DestroyJavaVM(JavaVM *vm) {
   DTRACE_PROBE1(hotspot_jni, DestroyJavaVM__entry, vm);
   jint res = JNI_ERR;

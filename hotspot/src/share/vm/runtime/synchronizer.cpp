@@ -526,7 +526,8 @@ static markOop ReadStableMark (oop obj) {
 //   There are simple ways to "diffuse" the middle address bits over the
 //   generated hashCode values:
 //
-
+// hashCode全局变量，选择算法，openjdk7 使用的是0，openjdk使用的是5- Thread state combined with xorshift (https://en.wikipedia.org/wiki/Xorshift)
+// 所以之前理解的hashCode是对象地址，是错误的!
 static inline intptr_t get_next_hash(Thread * Self, oop obj) {
   intptr_t value = 0 ;
   if (hashCode == 0) {

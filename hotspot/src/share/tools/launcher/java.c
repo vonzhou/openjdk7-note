@@ -182,7 +182,7 @@ jboolean ServerClassMachine();
 static int noExitErrorMessage = 0;
 
 /*
- * Running Java code in primordial thread caused many problems. We will
+ * Running Java code in primordial(主要) thread caused many problems. We will
  * create a new thread to invoke JVM. See 6316197 for more information.
  */
 static jlong threadStackSize = 0;  /* stack size of the new thread */
@@ -259,6 +259,7 @@ main(int argc, char ** argv)
 
     if (_launcher_debug)
       start = CounterGet();
+	// 创建VM
     if (!LoadJavaVM(jvmpath, &ifn)) {
       exit(6);
     }

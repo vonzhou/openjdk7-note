@@ -3,6 +3,7 @@
 #define SHARE_VM_OOPS_MARKOOP_HPP
 
 #include "oops/oop.hpp"
+// biased_lock位表征该对象是否被JavaThread*指向的线程偏向占有，lock位表示是否处于锁状态
 
 // The markOop describes the header of an object.
 //

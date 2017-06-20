@@ -3009,10 +3009,10 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
 
   extern void JDK_Version_init();
 
-  // Check version
+  // Check version 检查JNI的版本是否支持
   if (!is_supported_jni_version(args->version)) return JNI_EVERSION;
 
-  // Initialize the output stream module
+  // Initialize the output stream module 用于gc logging
   ostream_init();
 
   // Process java launcher properties.
@@ -3076,7 +3076,7 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
   // Initialize global data structures and create system classes in heap
   vm_init_globals();
 
-  // Attach the main thread to this os thread
+  // Attach the main thread to this os thread 这里
   JavaThread* main_thread = new JavaThread();
   main_thread->set_thread_state(_thread_in_vm);
   // must do this before set_active_handles and initialize_thread_local_storage
@@ -3117,6 +3117,7 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
 
   HandleMark hm;
 
+	// 加锁Threads_lock, 然后把main thread加入列表中
   { MutexLocker mu(Threads_lock);
     Threads::add(main_thread);
   }
@@ -3131,7 +3132,7 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
     Universe::verify();   // make sure we're starting with a clean slate
   }
 
-  // Create the VMThread
+  // Create the VMThread 执行VM中一些关键操作
   { TraceTime timer("Start VMThread", TraceStartupTime);
     VMThread::create();
     Thread* vmthread = VMThread::vm_thread();
@@ -3169,6 +3170,7 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
   // Notify JVMTI agents that VM has started (JNI is up) - nop if no agents.
   JvmtiExport::post_vm_start();
 
+	// 接下来一坨，加载初始化一些基础类: 
   {
     TraceTime timer("Initialize java.lang classes", TraceStartupTime);
 
@@ -3327,8 +3329,8 @@ jint Threads::create_vm(JavaVMInitArgs* args, bool* canTryAgain) {
   // Always call even when there are not JVMTI environments yet, since environments
   // may be attached late and JVMTI must track phases of VM execution
   JvmtiExport::enter_live_phase();
-
-  // Signal Dispatcher needs to be started before VMInit event is posted
+ 
+  // Signal Dispatcher needs to be started before VMInit event is posted, 创建并启动  Signal Handler thread
   os::signal_init();
 
   // Start Attach Listener if +StartAttachListener or it can't be started lazily
@@ -3619,6 +3621,7 @@ void JavaThread::invoke_shutdown_hooks() {
   CLEAR_PENDING_EXCEPTION;
 }
 
+// 学习
 // Threads::destroy_vm() is normally called from jni_DestroyJavaVM() when
 // the program falls off the end of main(). Another VM exit path is through
 // vm_exit() when the program calls System.exit() to return a value or when
@@ -3684,12 +3687,13 @@ bool Threads::destroy_vm() {
     HandleMark rm(thread);
     Universe::run_finalizers_on_exit();
   } else {
-    // run Java level shutdown hooks
+    // run Java level shutdown hooks 调用  java.lang.Shutdown.shutdown()
     thread->invoke_shutdown_hooks();
   }
 
   before_exit(thread);
 
+// 调用 JavaThread::exit(), release JNI handle blocks, remove stack guard pages, and remove this thread from Threads list. From this point on we cannot execute any more Java code.
   thread->exit(true);
 
   // Stop VM thread.
@@ -3724,11 +3728,12 @@ bool Threads::destroy_vm() {
   TraceRuntimeCalls = false;
 #endif
 
+//设置 _vm_exited 标志
   VM_Exit::set_vm_exited();
 
   notify_vm_shutdown();
 
-  delete thread;
+  delete thread;// 释放内存
 
   // exit_globals() will delete tty
   exit_globals();

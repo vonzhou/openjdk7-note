@@ -177,6 +177,7 @@ GetArch()
 }
 #endif /* ifndef GAMMA */
 
+
 void
 CreateExecutionEnvironment(int *_argcp,
                            char ***_argvp,
@@ -313,6 +314,7 @@ CreateExecutionEnvironment(int *_argcp,
         jvmpath[0] = '\0';
         jvmtype = CheckJvmType(_argcp, _argvp, JNI_FALSE);
 
+		// 获取jvm so的路径，比如Linux下面 jre/lib/libjvm.so，win下面jdk/lib/jvm.lib
         if (!GetJVMPath(jrepath, jvmtype, jvmpath, so_jvmpath, arch )) {
           fprintf(stderr, "Error: no `%s' JVM at `%s'.\n", jvmtype, jvmpath);
           exit(4);
@@ -718,6 +720,7 @@ LoadJavaVM(const char *jvmpath, InvocationFunctions *ifn)
         printf("JVM path is %s\n", jvmpath);
     }
 
+	// 加载动态库 libjvm.so
     libjvm = dlopen(jvmpath, RTLD_NOW + RTLD_GLOBAL);
     if (libjvm == NULL) {
 #if defined(__sparc) && !defined(_LP64) /* i.e. 32-bit sparc */
@@ -767,8 +770,10 @@ LoadJavaVM(const char *jvmpath, InvocationFunctions *ifn)
       goto error;
     }
 
+	// 上面dlopen执行后会返回一个handle，这里dlsym会返回特定符号加载到内存的地址，JNI_CreateJavaVM, JNI_GetDefaultJavaVMInitArgs
     ifn->CreateJavaVM = (CreateJavaVM_t)
       dlsym(libjvm, "JNI_CreateJavaVM");
+	// 执行JNI_CreateJavaVM
     if (ifn->CreateJavaVM == NULL)
         goto error;
 
@@ -1816,7 +1821,7 @@ jlong_format_specifier() {
 }
 
 /*
- * 在子线程中执行我们制定的方法，父线程等待
+ * 在子线程中执行我们指定的方法，父线程等待
  * Block current thread and continue execution in a new thread
  */
 int
@@ -1832,11 +1837,11 @@ ContinueInNewThread(int (JNICALL *continuation)(void *), jlong stack_size, void 
       pthread_attr_setstacksize(&attr, stack_size);
     }
 
-    if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0) {
+    if (pthread_create(&tid, &attr, (void *(*)(void*))continuation, (void*)args) == 0) {// 主线程等待
       void * tmp;
       pthread_join(tid, &tmp);
       rslt = (int)(intptr_t)tmp;
-    } else {
+    } else {  // 子线程中执行方法
      /*
       * Continue execution in current thread if for some reason (e.g. out of
       * memory/LWP)  a new thread can't be created. This will likely fail
