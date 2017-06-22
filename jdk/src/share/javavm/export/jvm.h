@@ -359,7 +359,7 @@ JVM_FindClassFromBootLoader(JNIEnv *env, const char *name);
 /*
  * Find a class from a given class loader. Throw ClassNotFoundException
  * or NoClassDefFoundError depending on the value of the last
- * argument.
+ * argument. ¾ßÌåjvm.cpp
  */
 JNIEXPORT jclass JNICALL
 JVM_FindClassFromClassLoader(JNIEnv *env, const char *name, jboolean init,

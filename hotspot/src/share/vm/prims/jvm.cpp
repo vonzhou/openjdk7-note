@@ -710,6 +710,9 @@ JVM_ENTRY(jclass, JVM_FindClassFromBootLoader(JNIEnv* env,
   return (jclass) JNIHandles::make_local(env, Klass::cast(k)->java_mirror());
 JVM_END
 
+/**
+ * 类加载
+ */
 JVM_ENTRY(jclass, JVM_FindClassFromClassLoader(JNIEnv* env, const char* name,
                                                jboolean init, jobject loader,
                                                jboolean throwError))
@@ -727,6 +730,7 @@ JVM_ENTRY(jclass, JVM_FindClassFromClassLoader(JNIEnv* env, const char* name,
   }
   TempNewSymbol h_name = SymbolTable::new_symbol(name, CHECK_NULL);
   Handle h_loader(THREAD, JNIHandles::resolve(loader));
+  // 这里
   jclass result = find_class_from_class_loader(env, h_name, init, h_loader,
                                                Handle(), throwError, THREAD);
 

@@ -3518,7 +3518,7 @@ static jint attach_current_thread(JavaVM *vm, void **penv, void *_args, bool dae
   }
   if (group == NULL) group = Universe::main_thread_group();
 
-  // Create Java level thread object and attach it to this thread
+  // Create Java level thread object and attach it to this thread 这里
   bool attach_failed = false;
   {
     EXCEPTION_MARK;
@@ -3568,6 +3568,11 @@ static jint attach_current_thread(JavaVM *vm, void **penv, void *_args, bool dae
 }
 
 
+/**
+ * native thread attaches to the VM
+ * 1. OSThread, JavaThread会创建和初始化
+ * 2. 创建一个java.lang.Thread对象
+ */
 jint JNICALL jni_AttachCurrentThread(JavaVM *vm, void **penv, void *_args) {
   DTRACE_PROBE3(hotspot_jni, AttachCurrentThread__entry, vm, penv, _args);
   if (!vm_created) {

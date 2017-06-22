@@ -114,6 +114,7 @@ Java_java_lang_Class_forName0(JNIEnv *env, jclass this, jstring classname,
         goto done;
     }
 
+	// ’‚¿Ô
     cls = JVM_FindClassFromClassLoader(env, clname, initialize,
                                        loader, JNI_FALSE);
 

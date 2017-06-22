@@ -110,6 +110,9 @@ class OopMapBlock VALUE_OBJ_CLASS_SPEC {
   uint _count;
 };
 
+/**
+ * ∂‘”¶ java.lang.Class
+ */
 class instanceKlass: public Klass {
   friend class VMStructs;
  public:
