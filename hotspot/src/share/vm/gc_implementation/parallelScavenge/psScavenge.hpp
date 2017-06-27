@@ -1,25 +1,18 @@
 /*
- * Copyright (c) 2002, 2010, Oracle and/or its affiliates. All rights reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
- * or visit www.oracle.com if you need additional information or have any
- * questions.
- *
+ * scavenge :清除；净化
+ * 年轻代默认的垃圾回收算法 Parallel Scavenge
+ * 使用选项-verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps 可以展示使用的GC算法
+ * 如: 
+ 
+ Heap
+  PSYoungGen	  total 173568K, used 166144K [0x00000000f5580000, 0x0000000100000000, 0x0000000100000000)
+   eden space 172544K, 95% used [0x00000000f5580000,0x00000000ff7383f0,0x00000000ffe00000)
+   from space 1024K, 53% used [0x00000000ffe00000,0x00000000ffe88000,0x00000000fff00000)
+   to	space 1024K, 0% used [0x00000000fff00000,0x00000000fff00000,0x0000000100000000)
+  ParOldGen 	  total 349696K, used 62533K [0x00000000e0000000, 0x00000000f5580000, 0x00000000f5580000)
+   object space 349696K, 17% used [0x00000000e0000000,0x00000000e3d11788,0x00000000f5580000)
+  Metaspace 	  used 70116K, capacity 71782K, committed 72064K, reserved 1114112K
+   class space	  used 7953K, capacity 8252K, committed 8320K, reserved 1048576K
  */
 
 #ifndef SHARE_VM_GC_IMPLEMENTATION_PARALLELSCAVENGE_PSSCAVENGE_HPP
