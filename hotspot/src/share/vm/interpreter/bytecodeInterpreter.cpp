@@ -1,24 +1,7 @@
 /*
- * Copyright (c) 2002, 2011, Oracle and/or its affiliates. All rights reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
- * or visit www.oracle.com if you need additional information or have any
- * questions.
+深入理解Java虚拟机
+了解字节码解释过程，虽然实际中很少被用到
+
  *
  */
 
@@ -1936,8 +1919,10 @@ run:
           UPDATE_PC_AND_TOS_AND_CONTINUE(3, count);
         }
 
+		// 创建对象的过程
       CASE(_new): {
         u2 index = Bytes::get_Java_u2(pc+1);
+		// 确保常量池中存放的是已解释的类
         constantPoolOop constants = istate->method()->constants();
         if (!constants->tag_at(index).is_unresolved_klass()) {
           // Make sure klass is initialized and doesn't have a finalizer
@@ -1946,20 +1931,24 @@ run:
           klassOop k_entry = (klassOop) entry;
           assert(k_entry->klass_part()->oop_is_instance(), "Should be instanceKlass");
           instanceKlass* ik = (instanceKlass*) k_entry->klass_part();
+		  // 所属类型已经历过初始化阶段
           if ( ik->is_initialized() && ik->can_be_fastpath_allocated() ) {
+		  	// 取对象长度
             size_t obj_size = ik->size_helper();
             oop result = NULL;
             // If the TLAB isn't pre-zeroed then we'll have to do it
             bool need_zero = !ZeroTLAB;
+			// 是否在 TLAB 中分配对象
             if (UseTLAB) {
               result = (oop) THREAD->tlab().allocate(obj_size);
             }
             if (result == NULL) {
               need_zero = true;
-              // Try allocate in shared eden
+              // Try allocate in shared eden 直接在 eden 中分配对象
         retry:
               HeapWord* compare_to = *Universe::heap()->top_addr();
               HeapWord* new_top = compare_to + obj_size;
+			  // cmpxchg 是 x86 中的 CAS 指令，这里是一个 C++ 方法，通过 CAS 方式分配空间，如果并发失败，则转至 retry 处重试，直至分配成功为止。
               if (new_top <= *Universe::heap()->end_addr()) {
                 if (Atomic::cmpxchg_ptr(new_top, Universe::heap()->top_addr(), compare_to) != compare_to) {
                   goto retry;
@@ -1968,7 +1957,7 @@ run:
               }
             }
             if (result != NULL) {
-              // Initialize object (if nonzero size and need) and then the header
+              // Initialize object (if nonzero size and need) and then the header 如果需要则对象初始化为0
               if (need_zero ) {
                 HeapWord* to_zero = (HeapWord*) result + sizeof(oopDesc) / oopSize;
                 obj_size -= sizeof(oopDesc) / oopSize;
@@ -1976,6 +1965,7 @@ run:
                   memset(to_zero, 0, obj_size * HeapWordSize);
                 }
               }
+			  // 根据是否启用偏向锁设置对象头
               if (UseBiasedLocking) {
                 result->set_mark(ik->prototype_header());
               } else {
@@ -1983,6 +1973,7 @@ run:
               }
               result->set_klass_gap(0);
               result->set_klass(k_entry);
+			  // 将对象引入栈，继续执行下一条指令
               SET_STACK_OBJECT(result, 0);
               UPDATE_PC_AND_TOS_AND_CONTINUE(3, 1);
             }

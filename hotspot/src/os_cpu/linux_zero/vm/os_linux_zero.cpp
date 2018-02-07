@@ -441,6 +441,8 @@ extern "C" {
         *(to--) = *(from--);
     }
   }
+
+  // 数组拷贝的实现
   void _Copy_conjoint_jints_atomic(jint* from, jint* to, size_t count) {
     if (from > to) {
       jint *end = from + count;
