@@ -1979,7 +1979,7 @@ run:
             }
           }
         }
-        // Slow case allocation
+        // Slow case allocation  Âı·ÖÅä
         CALL_VM(InterpreterRuntime::_new(THREAD, METHOD->constants(), index),
                 handle_exception);
         SET_STACK_OBJECT(THREAD->vm_result(), 0);

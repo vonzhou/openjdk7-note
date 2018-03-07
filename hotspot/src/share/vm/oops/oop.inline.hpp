@@ -1,26 +1,3 @@
-/*
- * Copyright (c) 1997, 2011, Oracle and/or its affiliates. All rights reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
- * or visit www.oracle.com if you need additional information or have any
- * questions.
- *
- */
 
 #ifndef SHARE_VM_OOPS_OOP_INLINE_HPP
 #define SHARE_VM_OOPS_OOP_INLINE_HPP
@@ -66,10 +43,12 @@ inline void oopDesc::release_set_mark(markOop m) {
   OrderAccess::release_store_ptr(&_mark, m);
 }
 
+// 原子操作设置 mark word
 inline markOop oopDesc::cas_set_mark(markOop new_mark, markOop old_mark) {
   return (markOop) Atomic::cmpxchg_ptr(new_mark, &_mark, old_mark);
 }
 
+// 获取对应的类型 klass
 inline klassOop oopDesc::klass() const {
   if (UseCompressedOops) {
     return (klassOop)decode_heap_oop_not_null(_metadata._compressed_klass);
@@ -135,14 +114,17 @@ inline void oopDesc::set_klass_to_list_ptr(oop k) {
   }
 }
 
+// 初始化 mark word
 inline void   oopDesc::init_mark()                 { set_mark(markOopDesc::prototype_for_object(this)); }
 inline Klass* oopDesc::blueprint()           const { return klass()->klass_part(); }
 
 inline bool oopDesc::is_a(klassOop k)        const { return blueprint()->is_subtype_of(k); }
 
+// 是否是类实例
 inline bool oopDesc::is_instance()           const { return blueprint()->oop_is_instance(); }
 inline bool oopDesc::is_instanceMirror()     const { return blueprint()->oop_is_instanceMirror(); }
 inline bool oopDesc::is_instanceRef()        const { return blueprint()->oop_is_instanceRef(); }
+// 是否是数组
 inline bool oopDesc::is_array()              const { return blueprint()->oop_is_array(); }
 inline bool oopDesc::is_objArray()           const { return blueprint()->oop_is_objArray(); }
 inline bool oopDesc::is_typeArray()          const { return blueprint()->oop_is_typeArray(); }

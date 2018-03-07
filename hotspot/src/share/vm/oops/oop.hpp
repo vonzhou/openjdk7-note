@@ -34,6 +34,7 @@ class CMSIsAliveClosure;
 class PSPromotionManager;
 class ParCompactionManager;
 
+// 每种类型的 oop 代表一个在 jvm 内部使用的特定对象类型
 class oopDesc {
   friend class VMStructs;
  private:

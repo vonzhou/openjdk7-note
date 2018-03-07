@@ -366,7 +366,7 @@ void instanceKlass::relocate_and_link_methods(TRAPS) {
   Rewriter::relocate_and_link(this_oop, CHECK);
 }
 
-
+// 类的初始化
 void instanceKlass::initialize_impl(instanceKlassHandle this_oop, TRAPS) {
   // Make sure klass is linked (verified) before initialization
   // A class could already be verified, since it has been reflected upon.
@@ -378,6 +378,7 @@ void instanceKlass::initialize_impl(instanceKlassHandle this_oop, TRAPS) {
 
   // refer to the JVM book page 47 for description of steps
   // Step 1
+  // ObjectLocker 所处的代码块执行完成后会释放锁，加锁过程只是为了设置初始化标志
   { ObjectLocker ol(this_oop, THREAD);
 
     Thread *self = THREAD; // it's passed the current thread
@@ -456,10 +457,12 @@ void instanceKlass::initialize_impl(instanceKlassHandle this_oop, TRAPS) {
                              jt->get_thread_stat()->perf_recursion_counts_addr(),
                              jt->get_thread_stat()->perf_timers_addr(),
                              PerfClassTraceTime::CLASS_CLINIT);
+	// 类初始化
     this_oop->call_class_initializer(THREAD);
   }
 
   // Step 9
+  // 初始化过程正常结束
   if (!HAS_PENDING_EXCEPTION) {
     this_oop->set_initialization_state_and_notify(fully_initialized, CHECK);
     { ResourceMark rm(THREAD);
@@ -972,6 +975,7 @@ methodOop instanceKlass::find_method(Symbol* name, Symbol* signature) const {
   return instanceKlass::find_method(methods(), name, signature);
 }
 
+// 二分查找
 methodOop instanceKlass::find_method(objArrayOop methods, Symbol* name, Symbol* signature) {
   int len = methods->length();
   // methods are sorted, so do binary search
@@ -1020,6 +1024,7 @@ methodOop instanceKlass::find_method(objArrayOop methods, Symbol* name, Symbol* 
   return NULL;
 }
 
+// 方法查找过程
 methodOop instanceKlass::uncached_lookup_method(Symbol* name, Symbol* signature) const {
   klassOop klass = as_klassOop();
   while (klass != NULL) {

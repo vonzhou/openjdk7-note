@@ -143,7 +143,7 @@ class instanceKlass: public Klass {
 
   // Array classes holding elements of this class.
   klassOop        _array_klasses;
-  // Method array.
+  // Method array. ·½·¨±í
   objArrayOop     _methods;
   // Int array containing the original order of method in the class file (for
   // JVMTI).
