@@ -58,6 +58,7 @@ void InterpreterCodelet::verify() {
 }
 
 
+// 解释器生成的 codelet 输出到控制台
 void InterpreterCodelet::print_on(outputStream* st) const {
   if (PrintInterpreter) {
     st->cr();
