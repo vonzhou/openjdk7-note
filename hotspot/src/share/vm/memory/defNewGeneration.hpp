@@ -11,8 +11,8 @@ class EdenSpace;
 class ContiguousSpace;
 class ScanClosure;
 
-// DefNewGeneration is a young generation containing eden, from- and
-// to-space.
+// 新生代
+// DefNewGeneration is a young generation containing eden, from- and to-space.
 
 class DefNewGeneration: public Generation {
   friend class VMStructs;
@@ -112,8 +112,8 @@ protected:
     MinFreeScratchWords = 100
   };
 
-  // Return the size of a survivor space if this generation were of size
-  // gen_size.
+  // 计算Survivor空间的大小，从这里可以更好的理解 -XX:SurvivorRatio=8 的含义
+  // Return the size of a survivor space if this generation were of size gen_size.
   size_t compute_survivor_size(size_t gen_size, size_t alignment) const {
     size_t n = gen_size / (SurvivorRatio + 2);
     return n > alignment ? align_size_down(n, alignment) : alignment;
